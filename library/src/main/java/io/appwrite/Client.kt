@@ -26,6 +26,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.RandomAccessFile
 import java.io.IOException
+import java.io.InputStream
 import java.net.CookieManager
 import java.net.CookiePolicy
 import java.security.SecureRandom
@@ -510,6 +511,10 @@ class Client @JvmOverloads constructor(
                             .buffered()
                             .use(BufferedInputStream::readBytes) as T
                         )
+                        return
+                    }
+                    responseType == InputStream::class.java -> {
+                        it.resume(response.body!!.byteStream() as T)
                         return
                     }
                     response.body == null -> {

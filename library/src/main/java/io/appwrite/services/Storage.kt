@@ -9,6 +9,7 @@ import okhttp3.Cookie
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.File
+import java.io.InputStream
 
 /**
  * The Storage service allows you to manage your project files.
@@ -241,6 +242,35 @@ class Storage : Service {
             apiPath,
             params = apiParams,
             responseType = ByteArray::class.java
+        )
+    }
+
+
+    /**
+     * Get File Stream
+     *
+     * Get a file content by its unique ID. The endpoint response return with a &#039;Content-Disposition: attachment&#039; header that tells the browser to start downloading the file to user downloads directory.
+     *
+     * @param bucketId Storage bucket ID. You can create a new storage bucket using the Storage service [server integration](/docs/server/storage#createBucket).
+     * @param fileId File ID.
+     * @return [InputStream]
+     */
+    suspend fun getFileStream(
+        bucketId: String,
+        fileId: String,
+    ): InputStream {
+        val apiPath = "/storage/buckets/{bucketId}/files/{fileId}/download"
+            .replace("{bucketId}", bucketId)
+            .replace("{fileId}", fileId)
+
+        val apiParams = mutableMapOf<String, Any?>(
+            "project" to client.config["project"],
+        )
+        return client.call(
+            "GET",
+            apiPath,
+            params = apiParams,
+            responseType = InputStream::class.java
         )
     }
 
